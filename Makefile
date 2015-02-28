@@ -18,7 +18,7 @@ install:
 
 backup:
 	cp -f codelines.c /nfs/projnfs/backups/codelines/codelines.c.$(DATE)
-	cp -f Makefile /nfs/projnfs/backups/codelines/Makefile.$(DATE)
+	cp -f Makefile /nfs/projnfs/backups/codelines/Makefile.c.$(DATE)
 
 clean:
 	rm *.o
