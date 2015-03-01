@@ -3,12 +3,13 @@
 	source_c.c
 
 	Process c language source lines. 
-	Verbosity set in codelines.h
-		vflag: verbose
-		Vflag: more verbose
 
 	API:
-	int process_c_source(FILE *, int)
+	int process_c_source(FILE *, int, int)
+		FILE *: Source file info
+		int:    vflag, light verbosity 
+		int:    Vflag, high verbosity
+
 
 	Dean Blevins
 	Feb 2015
@@ -46,11 +47,6 @@ int process_c_source(FILE *fp, int vflag, int Vflag)
 	int TotalLines =	0;
 	int rawlines =		0;
 	int maxline =		MAXLINELENGTH; 
-
-
-	/* Process each file */
-
-	rawlines = 0;
 
 	// Read each line
 	while ( ( cl = fgets(codeline, maxline, fp) ) != NULL) {

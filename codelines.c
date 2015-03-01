@@ -20,6 +20,8 @@
 #include <ctype.h>
 
 #include "source_c.h"
+#include "source_py.h"
+#include "source_txt.h"
 
 #define MAXFILENAME	20
 
@@ -90,6 +92,25 @@ main(int argc, char *argv[])
 			}
 
 			codelines = process_c_source(fp, vflag, Vflag);
+
+		} else if ( strstr(argv[index], ".py")) {
+		
+			// Is it a Python language file?
+			if ( strstr(argv[index], ".py")) {
+				if (vflag || Vflag) {
+					printf("Python source: %s\n", argv[index]);
+				}
+
+				codelines = process_py_source(fp, vflag, Vflag);
+			}
+
+		} else {
+			// Treat as a text file
+			if (vflag || Vflag) {
+				printf("Text(?) source: %s\n", argv[index]);
+			}
+
+			codelines = process_txt_source(fp, vflag, Vflag);
 		}
 
 		printf ("%d %s\n", codelines, argv[index]);
