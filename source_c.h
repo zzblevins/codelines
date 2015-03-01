@@ -9,4 +9,4 @@
 
 */
 
-int process_c_source(FILE *, int);
+int process_c_source(FILE *, int, int);

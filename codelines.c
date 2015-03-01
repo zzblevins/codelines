@@ -31,16 +31,21 @@ main(int argc, char *argv[])
 	char filename[MAXFILENAME];
 
 	int o;
-	int vflag =		0;
 	int tflag =		0;
 	int codelines =		0;
 	int index =		0;
 	int TotalLines =	0;
 
-	while ((o = getopt (argc, argv, "vth")) != -1) {
+	int vflag =		0;
+	int Vflag =		0;
+
+	while ((o = getopt (argc, argv, "vVth")) != -1) {
 		switch (o) {
 			case 'v':
 				vflag = 1;
+				break;
+			case 'V':
+				Vflag = 1;
 				break;
 			case 't':
 				tflag = 1;
@@ -80,11 +85,11 @@ main(int argc, char *argv[])
 
 		// Is it a c language file?
 		if ( strstr(argv[index], ".c") || strstr(argv[index], ".h") ) {
-			if (vflag) {
+			if (vflag || Vflag) {
 				printf("c source: %s\n", argv[index]);
 			}
 
-			codelines = process_c_source(fp, vflag);
+			codelines = process_c_source(fp, vflag, Vflag);
 		}
 
 		printf ("%d %s\n", codelines, argv[index]);

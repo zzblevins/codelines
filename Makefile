@@ -20,7 +20,7 @@ source_c.o: source_c.c source_c.h
 	$(CC) $(DEBUG) -c source_c.c
 
 clean:
-	rm *.o cl
+	rm -f *.o cl
 
 install:
 	cp -f cl ~/bin

@@ -3,6 +3,9 @@
 	source_c.c
 
 	Process c language source lines. 
+	Verbosity set in codelines.h
+		vflag: verbose
+		Vflag: more verbose
 
 	API:
 	int process_c_source(FILE *, int)
@@ -24,10 +27,8 @@
 #define FALSE		(!TRUE)
 #define MAXLINELENGTH	1024
 
-// int process_c_source(FILE *x, int v);
-
 /* Process a C language file */
-int process_c_source(FILE *fp, int vflag)
+int process_c_source(FILE *fp, int vflag, int Vflag)
 {
 
 	char c; 
@@ -106,13 +107,12 @@ int process_c_source(FILE *fp, int vflag)
 						SawCode = FALSE;
 						TestSlash = FALSE;
 					}
-					/** VERBOSE **/
-					if (vflag) {
+					/** Very verbose **/
+					if (Vflag) {
 						strncpy(pcodeline, codeline, strlen(codeline)-1); // chomp NL
 						pcodeline[strlen(codeline)-1] = '\0'; // Terminate the string
 						printf("%d : %d : %s\n", rawlines, codelines, pcodeline ); 
 					}
-					/** VERBOSE **/
 
 					TestStar = FALSE;
 					break;
