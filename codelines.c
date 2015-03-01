@@ -9,7 +9,7 @@
 
 	Dean Blevins
 	March 2013
-	Updated: Mon Oct 13 21:00:29 CDT 2014
+	1.0: Mon Oct 13 21:00:29 CDT 2014, C code only source type
 
 */
 
@@ -24,22 +24,18 @@
 #define MAXFILENAME	20
 #define MAXLINELENGTH	1024
 
-main(int argc, char *argv[])
+int process_c_source(FILE *x, int v);
+
+/* Process a C language file */
+int process_c_source(FILE *fp, int vflag)
 {
 
-	FILE *fp;
-
-	char filename[MAXFILENAME];
 	char c; 
 	char *cl; 
 	char codeline[MAXLINELENGTH];
 	char pcodeline[MAXLINELENGTH];
 
-	int o;
-	int vflag =		0;
-	int tflag =		0;
 	int codelines =		0;
-	int index =		0;
 	int j =			0;
 	int SawCode =		FALSE;
 	int InCComment =	FALSE;
@@ -49,6 +45,108 @@ main(int argc, char *argv[])
 	int TotalLines =	0;
 	int rawlines =		0;
 	int maxline =		MAXLINELENGTH; 
+
+
+	/* Process each file */
+
+	rawlines = 0;
+
+	// Read each line
+	while ( ( cl = fgets(codeline, maxline, fp) ) != NULL) {
+
+		rawlines = rawlines +1;
+
+		// Traverse the codeline string
+		for (j=0; j < strlen(codeline); j++) {
+
+			c = codeline[j];
+		
+			switch (c) {
+				
+				case ' ': case '\t': case '\r': 
+					TestSlash = FALSE;
+					break;
+
+				case '/':
+					if (TestSlash) { 
+						InCppComment = TRUE;
+						TestSlash = FALSE; // Reset Cpp comment marker
+					} else if (TestStar) {	
+						TestStar = FALSE;
+						TestSlash = FALSE;
+						SawCode = FALSE;
+						InCppComment = FALSE;
+						InCComment = FALSE;
+					} else
+						TestSlash = TRUE;
+					break;
+
+				case '*':
+					if (TestSlash) {
+						InCComment = TRUE;
+						if (SawCode) // saw code earlier in the line?
+							codelines++;
+						SawCode = FALSE;
+						InCppComment = FALSE;
+						TestSlash = FALSE;
+						TestStar = FALSE;
+					} else
+						TestStar = TRUE;
+					break;
+
+				case '\n':
+
+					if (SawCode) {
+						codelines++;
+						InCppComment = FALSE;
+						SawCode = FALSE;
+					}
+					if (InCppComment) {
+						InCppComment = FALSE;
+						SawCode = FALSE;
+						TestSlash = FALSE;
+					}
+					/** VERBOSE **/
+					if (vflag) {
+						strncpy(pcodeline, codeline, strlen(codeline)-1); // chomp NL
+						pcodeline[strlen(codeline)-1] = '\0'; // Terminate the string
+						printf("%d : %d : %s\n", rawlines, codelines, pcodeline ); 
+					}
+					/** VERBOSE **/
+
+					TestStar = FALSE;
+					break;
+
+				default:
+					// Read a code char, reset comment marker
+					TestSlash = FALSE;
+					TestStar = FALSE;
+					if (InCComment) break;
+					if (InCppComment) break;
+					SawCode = TRUE;
+					break;
+			}
+
+		}
+	}
+
+	return(codelines);
+
+}
+
+main(int argc, char *argv[])
+{
+
+	FILE *fp;
+
+	char filename[MAXFILENAME];
+
+	int o;
+	int vflag =		0;
+	int tflag =		0;
+	int codelines =		0;
+	int index =		0;
+	int TotalLines =	0;
 
 	while ((o = getopt (argc, argv, "vth")) != -1) {
 		switch (o) {
@@ -91,85 +189,13 @@ main(int argc, char *argv[])
 			return (-1);
 		}
 
-		rawlines = 0;
-
-		// Read each line
-		while ( ( cl = fgets(codeline, maxline, fp) ) != NULL) {
-
-			rawlines = rawlines +1;
-
-			// Traverse the codeline string
-			for (j=0; j < strlen(codeline); j++) {
-
-				c = codeline[j];
-		
-				switch (c) {
-				
-					case ' ': case '\t': case '\r': 
-						TestSlash = FALSE;
-						break;
-
-					case '/':
-						if (TestSlash) { 
-							InCppComment = TRUE;
-							TestSlash = FALSE; // Reset Cpp comment marker
-						} else if (TestStar) {	
-							TestStar = FALSE;
-							TestSlash = FALSE;
-							SawCode = FALSE;
-							InCppComment = FALSE;
-							InCComment = FALSE;
-						} else
-							TestSlash = TRUE;
-						break;
-
-					case '*':
-						if (TestSlash) {
-							InCComment = TRUE;
-							if (SawCode) // saw code earlier in the line?
-								codelines++;
-							SawCode = FALSE;
-							InCppComment = FALSE;
-							TestSlash = FALSE;
-							TestStar = FALSE;
-						} else
-							TestStar = TRUE;
-						break;
-
-					case '\n':
-
-						if (SawCode) {
-							codelines++;
-							InCppComment = FALSE;
-							SawCode = FALSE;
-						}
-						if (InCppComment) {
-							InCppComment = FALSE;
-							SawCode = FALSE;
-							TestSlash = FALSE;
-						}
-						/** VERBOSE **/
-						if (vflag) {
-							strncpy(pcodeline, codeline, strlen(codeline)-1); // chomp NL
-							pcodeline[strlen(codeline)-1] = '\0'; // Terminate the string
-							printf("%d : %d : %s\n", rawlines, codelines, pcodeline ); 
-						}
-						/** VERBOSE **/
-
-						TestStar = FALSE;
-						break;
-
-					default:
-						// Read a code char, reset comment marker
-						TestSlash = FALSE;
-						TestStar = FALSE;
-						if (InCComment) break;
-						if (InCppComment) break;
-						SawCode = TRUE;
-						break;
-				}
-
+		// Is it a c language file?
+		if ( strstr(argv[index], ".c") || strstr(argv[index], ".h") ) {
+			if (vflag) {
+				printf("c source: %s\n", argv[index]);
 			}
+
+			codelines = process_c_source(fp, vflag);
 		}
 
 		printf ("%d %s\n", codelines, argv[index]);
