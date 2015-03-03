@@ -31,12 +31,14 @@ main(int argc, char *argv[])
 	FILE *fp;
 
 	char filename[MAXFILENAME];
+	char *ext;
 
 	int o;
 	int tflag =		0;
 	int codelines =		0;
 	int index =		0;
 	int TotalLines =	0;
+	int prefix =		0;
 
 	int vflag =		0;
 	int Vflag =		0;
@@ -85,27 +87,42 @@ main(int argc, char *argv[])
 			return (-1);
 		}
 
-		// Is it a c language file?
-		if ( strstr(argv[index], ".c") || strstr(argv[index], ".h") ) {
+		// Look at the file extension (last .)
+
+		ext = strrchr(argv[index], '.');
+		if (ext == NULL) {
+
+			// No '.', assume it's a text file
+
+			if (vflag || Vflag) {
+				printf("Text(?) source: %s\n", argv[index]);
+			}
+
+			codelines = process_txt_source(fp, vflag, Vflag);
+
+		} else if (strstr(ext, ".c") || strstr(ext, ".h")) {
+				
+			// C language file
+			
 			if (vflag || Vflag) {
 				printf("c source: %s\n", argv[index]);
 			}
 
 			codelines = process_c_source(fp, vflag, Vflag);
 
-		} else if ( strstr(argv[index], ".py")) {
-		
-			// Is it a Python language file?
-			if ( strstr(argv[index], ".py")) {
-				if (vflag || Vflag) {
-					printf("Python source: %s\n", argv[index]);
-				}
-
-				codelines = process_py_source(fp, vflag, Vflag);
+		} else if (strstr(ext, ".py")) {
+				
+			// Python file
+			
+			if (vflag || Vflag) {
+				printf("Python source: %s\n", argv[index]);
 			}
 
+			codelines = process_py_source(fp, vflag, Vflag);
+
 		} else {
-			// Treat as a text file
+
+			// Treat as a text file - default
 			if (vflag || Vflag) {
 				printf("Text(?) source: %s\n", argv[index]);
 			}

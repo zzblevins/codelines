@@ -33,7 +33,7 @@ install:
 backup:
 	cp -f codelines.c /nfs/projnfs/backups/codelines/codelines.c.$(DATE)
 	cp -f source_c.c /nfs/projnfs/backups/codelines/source_c.c.$(DATE)
-	cp -f source_py.c /nfs/projnfs/backups/codelines/source_c.py.$(DATE)
-	cp -f source_txt.c /nfs/projnfs/backups/codelines/source_c.txt.$(DATE)
+	cp -f source_py.c /nfs/projnfs/backups/codelines/source_py.c.$(DATE)
+	cp -f source_txt.c /nfs/projnfs/backups/codelines/source_txt.c.$(DATE)
 	cp -f Makefile /nfs/projnfs/backups/codelines/Makefile.c.$(DATE)
 
