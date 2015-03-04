@@ -14,6 +14,8 @@
 */
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -29,6 +31,8 @@ main(int argc, char *argv[])
 {
 
 	FILE *fp;
+
+	struct stat stbuf;
 
 	char filename[MAXFILENAME];
 	char *ext;
@@ -85,6 +89,15 @@ main(int argc, char *argv[])
 		if ( ( fp = fopen(argv[index], "r") ) == NULL) {
 			printf("Error: Can't read %s\n", argv[index]);
 			return (-1);
+		}
+
+		// Check to see if this is a directory, skip if so
+		stat(argv[index], &stbuf);
+		if (stbuf.st_mode & S_IFDIR) {
+			if (vflag || Vflag) {
+				printf("Skipping directory: %s\n", argv[index]);
+                        }
+			continue;
 		}
 
 		// Look at the file extension (last .)
