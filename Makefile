@@ -4,8 +4,8 @@
 
 # CC = icc
 CC = g++
-#DEBUG =
-DEBUG = -ggdb
+DEBUG =
+#DEBUG = -ggdb
 DATE = `date +%Y%m%d%H%M`
 
 all: cl
