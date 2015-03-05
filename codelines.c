@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 
 			codelines = process_txt_source(fp, vflag, Vflag);
 
-		} else if (strstr(ext, ".c") || strstr(ext, ".h")) {
+		} else if ((strcmp(ext, ".c") == 0) || (strcmp(ext, ".h") == 0)) {
 				
 			// C language file
 			
@@ -123,7 +123,7 @@ main(int argc, char *argv[])
 
 			codelines = process_c_source(fp, vflag, Vflag);
 
-		} else if (strstr(ext, ".py")) {
+		} else if (strcmp(ext, ".py") == 0) {
 				
 			// Python file
 			
