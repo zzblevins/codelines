@@ -8,7 +8,9 @@ DEBUG =
 #DEBUG = -ggdb
 DATE = `date +%Y%m%d%H%M`
 
-all: cl
+APP = cl
+
+all: $(APP)
 
 cl: codelines.o source_c.o source_py.o source_txt.o
 	$(CC) $(DEBUG) codelines.o source_c.o source_py.o source_txt.o -o cl
@@ -28,7 +30,7 @@ clean:
 	rm -f *.o cl
 
 install:
-	cp -f cl ~/bin
+	/usr/bin/install --verbose --strip --target-directory ~/bin $(APP)
 
 backup:
 	cp -f codelines.c /nfs/projnfs/backups/codelines/codelines.c.$(DATE)
